@@ -52,7 +52,7 @@ class APIRequest {
                 alert("Invalid credentials, updating... Please try again.");
                 return false;
             }
-            response.json().then(parsed => stuff(parsed));
+            response.json().then(parsed => displayDepartures(parsed));
         });
     }
 }
@@ -101,10 +101,10 @@ function clearList() {
 function readFile(file) {
     fetch(file)
     .then(response => response.json())
-    .then(jsonResponse => stuff(jsonResponse));
+    .then(jsonResponse => displayDepartures(jsonResponse));
 }
 
-function stuff(input) {
+function displayDepartures(input) {
     console.log(input);
     var departures = input["DepartureBoard"]["Departure"];
     console.log(departures);
