@@ -13,10 +13,6 @@ function addListElement(text) {
   listContainer.appendChild(newRow);
 }
 
-function randInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 function changeBg() {
     var red = Math.random()
     var green = Math.random()
@@ -25,4 +21,15 @@ function changeBg() {
     color = "rgb(" + red + ", " + green + ", " + blue + ")";
     document.bgColor = color;
     addListElement(color)
+    console.log("Changed bg")
+}
+
+function clearList() {
+    var children = document.getElementById("list").children;
+    console.log(children.length);
+    var i = 0;
+    while (i < children.length) {
+        children[0].parentElement.removeChild(children[0]);
+    }
+    console.log("List cleared")
 }
