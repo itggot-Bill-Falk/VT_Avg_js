@@ -1,0 +1,7 @@
+li:nth-of-type(2n) {
+    background-color: #303030;
+}
+
+li:nth-of-type(2n-1) {
+    background-color: #909090;
+}
