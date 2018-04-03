@@ -64,28 +64,33 @@ var API = new APIRequest();
 
 document.body.onload = changeBg();
 
-function addListElement(text) { 
-  // create a new div element 
-  var newRow = document.createElement("li"); 
-  // and give it some content 
-  var newContent = document.createTextNode(text); 
-  // add the text node to the newly created div
-  newRow.appendChild(newContent);
+function addListElement(text, bgcolor=null, fgcolor=null) { 
+    // create a new div element 
+    var newRow = document.createElement("li"); 
+    // and give it some content 
+    var newContent = document.createTextNode(text); 
+    // add the text node to the newly created div
+    newRow.appendChild(newContent);
+    // add class if needed
+    if (bgcolor != null && fgcolor != null) {
+        newRow.style.background = bgcolor;
+        newRow.style.color = fgcolor;
+    }
 
-  // add the newly created element and its content into the DOM 
-  var listContainer = document.getElementById("list"); 
-  listContainer.appendChild(newRow);
+    // add the newly created element and its content into the DOM 
+    var listContainer = document.getElementById("list"); 
+    listContainer.appendChild(newRow);
 }
 
 function changeBg() {
-    var red = Math.random()
-    var green = Math.random()
-    var blue = Math.random()
+    var red = Math.random();
+    var green = Math.random();
+    var blue = Math.random();
 
     color = "rgb(" + red + ", " + green + ", " + blue + ")";
     document.bgColor = color;
-    addListElement(color)
-    console.log("Changed bg")
+    addListElement(color);
+    console.log("Changed bg");
 }
 
 function clearList() {
@@ -111,7 +116,8 @@ function displayDepartures(input) {
 
     var i = 0;
     for (var i = 0; i < departures.length; i++) {
-        text = departures[i]["name"] + " " + departures[i]["direction"] + " " + departures[i]["time"]
-        addListElement(text)
+        text = departures[i]["name"] + " " + departures[i]["direction"] + " " + departures[i]["time"];
+
+        addListElement(text, departures[i]["fgColor"], departures[i]["bgColor"]);
     }
 }
