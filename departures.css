@@ -6,8 +6,10 @@ button {
 
 li:nth-of-type(2n) {
     background-color: #303030;
+    color: #fff;
 }
 
 li:nth-of-type(2n-1) {
     background-color: #909090;
+    color: #000;
 }

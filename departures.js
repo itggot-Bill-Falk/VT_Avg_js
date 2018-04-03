@@ -33,3 +33,21 @@ function clearList() {
     }
     console.log("List cleared")
 }
+
+function readFile(file) {
+    fetch(file)
+    .then(response => response.json())
+    .then(jsonResponse => stuff(jsonResponse));
+}
+
+function stuff(input) {
+    console.log(input);
+    var departures = input["DepartureBoard"]["Departure"];
+    console.log(departures);
+
+    var i = 0;
+    for (var i = 0; i < departures.length; i++) {
+        text = departures[i]["name"] + " " + departures[i]["direction"] + " " + departures[i]["time"]
+        addListElement(text)
+    }
+}
