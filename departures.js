@@ -1,3 +1,43 @@
+// API Handler
+class APIRequest {
+    
+    constructor() {
+        this.renewToken();
+    }
+    
+    renewToken() {
+        fetch("credentials.txt")
+        .then(response => response.text())
+        .then(text => this.renewHeader(text));
+    }
+
+    renewHeader(auth) {
+        var header = new Headers();
+        header.set("Content-Type", "application/x-www-form-urlencoded");
+        header.set("Authorization", auth);
+
+        var myInit = { method: 'POST', headers: header};
+
+        var myRequest = new Request("https://api.vasttrafik.se/token?grant_type=client_credentials&scope=device_1", myInit);
+        fetch(myRequest)
+        .then(response => response.json())
+        .then(responseArr => {
+            var token = responseArr["access_token"];
+            var headers = new Headers();
+            headers.set("Authorization", "Bearer " + token);
+            this.init = { method: "GET", headers: headers };
+            addListElement(token);
+        });
+    }
+
+    
+}
+
+
+
+// Main
+var API = new APIRequest();
+
 document.body.onload = changeBg();
 
 function addListElement(text) { 
