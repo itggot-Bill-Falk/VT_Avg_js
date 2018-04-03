@@ -30,7 +30,31 @@ class APIRequest {
         });
     }
 
+    getDepartures(stop, date=null, time=null) {
+        if (date == null || time == null) {
+            var currenttime = new Date();
+            if (date == null) {
+                date = currenttime.getFullYear() + "-" + (currenttime.getMonth()+1) + "-" + currenttime.getDate();
+            }
+            if (time == null) {
+                time = currenttime.getHours() + ":" + currenttime.getMinutes();
+            }
+        }
+        
+        time = time.replace(".", ":");
+        var url = "https://api.vasttrafik.se/bin/rest.exe/v2/departureBoard?id=" + stop + "&date=" + date + "&time=" + time + "&format=json";
     
+        var myRequest = new Request(url, this.init);
+        fetch(myRequest)
+        .then(response => {
+            if (response.status == 401) {
+                this.renewToken();
+                alert("Invalid credentials, updating... Please try again.");
+                return false;
+            }
+            response.json().then(parsed => stuff(parsed));
+        });
+    }
 }
 
 
