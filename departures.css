@@ -26,3 +26,8 @@ ul {
 .whiteh1 {
     color: white;
 }
+
+.link:hover {
+    color: blue;
+    cursor: pointer;
+}
