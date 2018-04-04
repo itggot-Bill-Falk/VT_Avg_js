@@ -86,6 +86,15 @@ function changeBg() {
     var red = Math.random();
     var green = Math.random();
     var blue = Math.random();
+    var average = (blue + green + red) / 3;
+    console.log(average);
+
+    var h1 = document.getElementById("h1");
+    if (average > 0.5) {
+        h1.classList.add("whiteh1");
+    } else {
+        h1.classList.remove("whiteh1");
+    }
 
     color = "rgb(" + red + ", " + green + ", " + blue + ")";
     document.bgColor = color;
