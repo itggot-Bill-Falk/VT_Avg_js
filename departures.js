@@ -5,12 +5,14 @@ class APIRequest {
         this.renewToken();
     }
     
+    // Get credentials from saved file
     renewToken() {
         fetch("credentials.txt")
         .then(response => response.text())
         .then(text => this.renewHeader(text));
     }
 
+    // Request new token
     renewHeader(auth) {
         var header = new Headers();
         header.set("Content-Type", "application/x-www-form-urlencoded");
@@ -22,6 +24,7 @@ class APIRequest {
         fetch(myRequest)
         .then(response => response.json())
         .then(responseArr => {
+            // Get token and add it to header and init for use in future requests
             var token = responseArr["access_token"];
             var headers = new Headers();
             headers.set("Authorization", "Bearer " + token);
@@ -30,7 +33,9 @@ class APIRequest {
         });
     }
 
+    // Request departures from stop
     getDepartures(stop, date=null, time=null) {
+        // Use current time if not provided
         if (date == null || time == null) {
             var currenttime = new Date();
             if (date == null) {
@@ -48,6 +53,7 @@ class APIRequest {
         fetch(myRequest)
         .then(response => {
             if (response.status == 401) {
+                // If token is invalid
                 this.renewToken();
                 alert("Invalid credentials, updating... Please try again.");
                 return false;
@@ -57,7 +63,6 @@ class APIRequest {
     }
 }
 
-console.log("" === 0);
 
 
 // Main
@@ -65,14 +70,15 @@ var API = new APIRequest();
 
 document.body.onload = changeBg();
 
+// Add a row to the list
 function addListElement(text, bgcolor=null, fgcolor=null) { 
-    // create a new list element 
+    // create a new li element 
     var newRow = document.createElement("li"); 
     // and give it some content 
     var newContent = document.createTextNode(text); 
-    // add the text node to the newly created list
+    // add the text node to the newly created li
     newRow.appendChild(newContent);
-    // add style if needed
+    // add colours if provided
     if (bgcolor != null && fgcolor != null) {
         newRow.style.background = bgcolor;
         newRow.style.color = fgcolor;
@@ -83,6 +89,7 @@ function addListElement(text, bgcolor=null, fgcolor=null) {
     listContainer.appendChild(newRow);
 }
 
+// Change background to a random colour
 function changeBg() {
     var red = Math.random();
     var green = Math.random();
@@ -90,6 +97,7 @@ function changeBg() {
     var average = (blue + green + red) / 3;
     console.log(average);
 
+    // If colour is dark then make headline white
     var h1 = document.getElementById("h1");
     if (average > 0.5) {
         h1.classList.add("whiteh1");
@@ -97,45 +105,51 @@ function changeBg() {
         h1.classList.remove("whiteh1");
     }
 
+    // Change background
     color = "rgb(" + red + ", " + green + ", " + blue + ")";
     document.bgColor = color;
     addListElement(color);
     console.log("Changed bg");
 }
 
+// Clear the ul from all li elements
 function clearList() {
     var children = document.getElementById("list").children;
     console.log(children.length);
-    var i = 0;
-    while (i < children.length) {
+    while (0 < children.length) {
         children[0].parentElement.removeChild(children[0]);
     }
     console.log("List cleared")
 }
 
+// Read saved deps file used for testing
 function readFile(file) {
     fetch(file)
     .then(response => response.json())
     .then(jsonResponse => displayDepartures(jsonResponse));
 }
 
+// Add the departures to the list
 function displayDepartures(input) {
     console.log(input);
     var departures = input["DepartureBoard"]["Departure"];
     console.log(departures);
 
+    // Go through all departures and add them to the list
     var i = 0;
     for (var i = 0; i < departures.length; i++) {
+        // Get delay and format it
         var delay = getDelay(departures[i]);
         if (delay >= 0 && delay !== "") {
             delay = "+" + delay;
         }
-        text = departures[i]["name"] + " " + departures[i]["direction"] + " " + departures[i]["time"] + " " + delay;
 
+        text = departures[i]["name"] + " " + departures[i]["direction"] + " " + departures[i]["time"] + " " + delay;
         addListElement(text, departures[i]["fgColor"], departures[i]["bgColor"]);
     }
 }
 
+// Get the delay for a departure
 function getDelay(departure) {
     // Get the data
     var timetable = departure["time"];
@@ -155,7 +169,6 @@ function getDelay(departure) {
     var rth = realtime.split(":")[0];
     var ttm = timetable.split(":")[1];
     var rtm = realtime.split(":")[1];
-    
 
     // Convert to numbers
     tth = Number(tth);
