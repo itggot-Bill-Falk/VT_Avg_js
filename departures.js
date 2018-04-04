@@ -61,6 +61,24 @@ class APIRequest {
             response.json().then(parsed => displayDepartures(parsed));
         });
     }
+
+    //Search for stops
+    getStops(name) {
+        var url = "https://api.vasttrafik.se/bin/rest.exe/v2/location.name?input=" + name + "&format=json";
+        var myRequest = new Request(url, this.init);
+        
+        fetch(myRequest)
+        .then(response => {
+            console.log(response);
+            if (response.status == 401) {
+                // If token is invalid
+                this.renewToken();
+                alert("Invalid credentials, updating... Please try again.");
+                return false;
+            }
+            response.json().then(parsed => displayStops(parsed));
+        })
+    }
 }
 
 
@@ -71,7 +89,7 @@ var API = new APIRequest();
 document.body.onload = changeBg();
 
 // Add a row to the list
-function addListElement(text, bgcolor=null, fgcolor=null) { 
+function addListElement(text, bgcolor=null, fgcolor=null, attributes=[]) { 
     // create a new li element 
     var newRow = document.createElement("li"); 
     // and give it some content 
@@ -83,6 +101,21 @@ function addListElement(text, bgcolor=null, fgcolor=null) {
         newRow.style.background = bgcolor;
         newRow.style.color = fgcolor;
     }
+
+    console.log(attributes);
+    try {
+        if ( attributes != null && attributes[0].constructor != Array) {
+            newRow.setAttribute(attributes[0], attributes[1]);
+        } else {
+            for (var i = 0; i < attributes.length; i++) {
+                newRow.setAttribute(attributes[i][0], attributes[i][1]);
+            }
+        }
+    } catch(e) {
+        console.log("No attributes provided")
+    }
+    
+    
 
     // add the newly created element and its content into the DOM 
     var listContainer = document.getElementById("list"); 
@@ -192,4 +225,31 @@ function getDelay(departure) {
     var delay = rtm - ttm;
     console.log("Delay: " + delay);
     return delay;
+}
+
+function searchStop() {
+    var input = document.getElementById("stopSearch").value;
+    console.log(input);
+    API.getStops(input);
+}
+
+function displayStops(stops) {
+    console.log(stops);
+    var locations = stops["LocationList"];
+    var stoplocations = locations["StopLocation"];
+
+    if (stoplocations instanceof Array) {
+        for (var i = 0; i < stoplocations.length; i++) {
+            var text = stoplocations[i]["name"] + " ID: " + stoplocations[i]["id"];
+            addListElement(text);
+        }
+    } else if (stoplocations == null) {
+        addListElement("No stops found.");
+    } else {
+        var text = stoplocations["name"] + " ID: " + stoplocations["id"];
+        addListElement(text, null, null, ["style", "background-color: red;"]);
+    }
+    
+
+    
 }

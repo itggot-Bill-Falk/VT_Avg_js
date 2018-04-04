@@ -12,6 +12,10 @@
     <button onclick="clearList()">Clear</button>
     <button onclick="readFile('deps.json')">Read deps file</button>
     <button onclick="API.getDepartures('9021014001960000')">Get live departures from Chalmers</button>
+    
+    <input type="text" id="stopSearch" name="stop" placeholder="Search for stop">
+    <button id="search" onclick="searchStop()">Search</button>
+
 
     <div id="main">
         <h1 id="h1">Departures</h1>
