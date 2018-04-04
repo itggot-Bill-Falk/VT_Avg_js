@@ -5,12 +5,11 @@ button, input {
 
 li {
     padding: 5px;
-    
 }
 
 li:nth-of-type(2n) {
-    background-color: #303030;
-    color: #fff;
+    background-color: #e0e0e0;
+    color: #000;
 }
 
 li:nth-of-type(2n-1) {

@@ -69,7 +69,6 @@ class APIRequest {
         
         fetch(myRequest)
         .then(response => {
-            console.log(response);
             if (response.status == 401) {
                 // If token is invalid
                 this.renewToken();
@@ -84,24 +83,21 @@ class APIRequest {
 
 
 // Main
+
 var API = new APIRequest();
 
 document.body.onload = changeBg();
 
 // Add a row to the list
-function addListElement(text, bgcolor=null, fgcolor=null, attributes=[]) { 
-    // create a new li element 
+function addListElement(text, attributes=[]) { 
+    // Create a new li element 
     var newRow = document.createElement("li"); 
-    // and give it some content 
+    // And give it some content 
     var newContent = document.createTextNode(text); 
-    // add the text node to the newly created li
+    // Add the text node to the newly created li
     newRow.appendChild(newContent);
-    // add colours if provided
-    if (bgcolor != null && fgcolor != null) {
-        newRow.style.background = bgcolor;
-        newRow.style.color = fgcolor;
-    }
-
+    
+    // Add provided attributes
     console.log(attributes);
     try {
         if ( attributes != null && attributes[0].constructor != Array) {
@@ -115,9 +111,7 @@ function addListElement(text, bgcolor=null, fgcolor=null, attributes=[]) {
         console.log("No attributes provided")
     }
     
-    
-
-    // add the newly created element and its content into the DOM 
+    // Add the newly created element and its content into the DOM 
     var listContainer = document.getElementById("list"); 
     listContainer.appendChild(newRow);
 }
@@ -128,7 +122,6 @@ function changeBg() {
     var green = Math.random();
     var blue = Math.random();
     var average = (blue + green + red) / 3;
-    console.log(average);
 
     // If colour is dark then make headline white
     var h1 = document.getElementById("h1");
@@ -177,8 +170,9 @@ function displayDepartures(input) {
             delay = "+" + delay;
         }
 
-        text = departures[i]["name"] + " " + departures[i]["direction"] + " " + departures[i]["time"] + " " + delay;
-        addListElement(text, departures[i]["fgColor"], departures[i]["bgColor"]);
+        var text = departures[i]["name"] + " " + departures[i]["direction"] + " " + departures[i]["time"] + " " + delay;
+        var styles = "background-color: " + departures[i]["fgColor"] + "; color: " + departures[i]["bgColor"] + ";";
+        addListElement(text, ["style", styles]);
     }
 }
 
@@ -187,11 +181,10 @@ function getDelay(departure) {
     // Get the data
     var timetable = departure["time"];
     var realtime = departure["rtTime"];
-    console.log(timetable + " " + realtime);
 
     // If no realtime data is available
     if (realtime == null) {
-        console.log("null");
+        console.log("No realtime information provided");
         return "";
     }
 
@@ -208,7 +201,6 @@ function getDelay(departure) {
     rth = Number(rth);
     ttm = Number(ttm);
     rtm = Number(rtm);
-    console.log(tth + " " + rth + " " + ttm + " " + rtm);
 
     // If delay goes over midnight
     if (ttDate != rtDate) {
@@ -223,33 +215,35 @@ function getDelay(departure) {
     ttm += tth*60;
     rtm += rth*60;
     var delay = rtm - ttm;
-    console.log("Delay: " + delay);
     return delay;
 }
 
 function searchStop() {
     var input = document.getElementById("stopSearch").value;
-    console.log(input);
     API.getStops(input);
 }
 
 function displayStops(stops) {
-    console.log(stops);
     var locations = stops["LocationList"];
     var stoplocations = locations["StopLocation"];
 
     if (stoplocations instanceof Array) {
         for (var i = 0; i < stoplocations.length; i++) {
             var text = stoplocations[i]["name"] + " ID: " + stoplocations[i]["id"];
-            addListElement(text);
+
+            var onclick = ["onclick", "API.getDepartures(" + stoplocations[i]["id"] + ")"];
+            var style = ["style", "color: blue; text-decoration: underline;"];
+            var attributes = [onclick, style];
+            addListElement(text, attributes);
         }
     } else if (stoplocations == null) {
         addListElement("No stops found.");
     } else {
         var text = stoplocations["name"] + " ID: " + stoplocations["id"];
-        addListElement(text, null, null, ["style", "background-color: red;"]);
+        
+        var onclick = ["onclick", "API.getDepartures(" + stoplocations["id"] + ")"];
+        var style = ["style", "color: blue; text-decoration: underline;"];
+        var attributes = [onclick, style];
+        addListElement(text, attributes);
     }
-    
-
-    
 }
