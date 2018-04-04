@@ -161,18 +161,30 @@ function displayDepartures(input) {
     var departures = input["DepartureBoard"]["Departure"];
     console.log(departures);
 
-    // Go through all departures and add them to the list
-    var i = 0;
-    for (var i = 0; i < departures.length; i++) {
-        // Get delay and format it
-        var delay = getDelay(departures[i]);
+    if (departures instanceof Object && departures.length != undefined) {
+        // Go through all departures and add them to the list
+        for (var i = 0; i < departures.length; i++) {
+            // Get delay and format it
+            var delay = getDelay(departures[i]);
+            if (delay >= 0 && delay !== "") {
+                delay = "+" + delay;
+            }
+
+            var text = departures[i]["name"] + " " + departures[i]["direction"] + " " + departures[i]["time"] + " " + delay;
+            var styles = "background-color: " + departures[i]["fgColor"] + "; color: " + departures[i]["bgColor"] + ";";
+            addListElement(text, ["style", styles]);
+        }
+    } else if (departures == undefined) {
+        addListElement("No departures found.");
+    } else {
+        var delay = getDelay(departures);
         if (delay >= 0 && delay !== "") {
             delay = "+" + delay;
         }
 
-        var text = departures[i]["name"] + " " + departures[i]["direction"] + " " + departures[i]["time"] + " " + delay;
-        var styles = "background-color: " + departures[i]["fgColor"] + "; color: " + departures[i]["bgColor"] + ";";
-        addListElement(text, ["style", styles]);
+        var text = departures["name"] + " " + departures["direction"] + " " + departures["time"] + " " + delay;
+        var styles = "background-color: " + departures["fgColor"] + "; color: " + departures["bgColor"] + ";";
+        addListElement(text, ["style", styles]); 
     }
 }
 
