@@ -57,6 +57,7 @@ class APIRequest {
     }
 }
 
+console.log("" === 0);
 
 
 // Main
@@ -65,13 +66,13 @@ var API = new APIRequest();
 document.body.onload = changeBg();
 
 function addListElement(text, bgcolor=null, fgcolor=null) { 
-    // create a new div element 
+    // create a new list element 
     var newRow = document.createElement("li"); 
     // and give it some content 
     var newContent = document.createTextNode(text); 
-    // add the text node to the newly created div
+    // add the text node to the newly created list
     newRow.appendChild(newContent);
-    // add class if needed
+    // add style if needed
     if (bgcolor != null && fgcolor != null) {
         newRow.style.background = bgcolor;
         newRow.style.color = fgcolor;
@@ -125,8 +126,57 @@ function displayDepartures(input) {
 
     var i = 0;
     for (var i = 0; i < departures.length; i++) {
-        text = departures[i]["name"] + " " + departures[i]["direction"] + " " + departures[i]["time"];
+        var delay = getDelay(departures[i]);
+        if (delay >= 0 && delay !== "") {
+            delay = "+" + delay;
+        }
+        text = departures[i]["name"] + " " + departures[i]["direction"] + " " + departures[i]["time"] + " " + delay;
 
         addListElement(text, departures[i]["fgColor"], departures[i]["bgColor"]);
     }
+}
+
+function getDelay(departure) {
+    // Get the data
+    var timetable = departure["time"];
+    var realtime = departure["rtTime"];
+    console.log(timetable + " " + realtime);
+
+    // If no realtime data is available
+    if (realtime == null) {
+        console.log("null");
+        return "";
+    }
+
+    // Get more data
+    var ttDate = departure["date"];
+    var rtDate = departure["rtDate"];
+    var tth = timetable.split(":")[0];
+    var rth = realtime.split(":")[0];
+    var ttm = timetable.split(":")[1];
+    var rtm = realtime.split(":")[1];
+    
+
+    // Convert to numbers
+    tth = Number(tth);
+    rth = Number(rth);
+    ttm = Number(ttm);
+    rtm = Number(rtm);
+    console.log(tth + " " + rth + " " + ttm + " " + rtm);
+
+    // If delay goes over midnight
+    if (ttDate != rtDate) {
+        if (rth < tth) {
+            rth += 24;
+        } else {
+            tth += 24;
+        }
+    }
+
+    // Turn hours into minutes and calculate delay
+    ttm += tth*60;
+    rtm += rth*60;
+    var delay = rtm - ttm;
+    console.log("Delay: " + delay);
+    return delay;
 }

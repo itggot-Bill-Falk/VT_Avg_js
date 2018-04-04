@@ -3,6 +3,9 @@ button {
     padding: 10px;
 }
 
+li {
+    padding: 5px;
+}
 
 li:nth-of-type(2n) {
     background-color: #303030;
