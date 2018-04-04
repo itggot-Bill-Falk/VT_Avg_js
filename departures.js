@@ -1,4 +1,4 @@
-// API Handler
+// ---- API Handler ----
 class APIRequest {
     
     constructor() {
@@ -29,7 +29,6 @@ class APIRequest {
             var headers = new Headers();
             headers.set("Authorization", "Bearer " + token);
             this.init = { method: "GET", headers: headers };
-            addListElement(token);
         });
     }
 
@@ -76,45 +75,14 @@ class APIRequest {
                 return false;
             }
             response.json().then(parsed => displayStops(parsed));
-        })
+        });
     }
 }
 
 
-
-// Main
-
-var API = new APIRequest();
+// ---- Eyecandy ----
 
 document.body.onload = changeBg();
-
-// Add a row to the list
-function addListElement(text, attributes=[]) { 
-    // Create a new li element 
-    var newRow = document.createElement("li"); 
-    // And give it some content 
-    var newContent = document.createTextNode(text); 
-    // Add the text node to the newly created li
-    newRow.appendChild(newContent);
-    
-    // Add provided attributes
-    console.log(attributes);
-    try {
-        if ( attributes != null && attributes[0].constructor != Array) {
-            newRow.setAttribute(attributes[0], attributes[1]);
-        } else {
-            for (var i = 0; i < attributes.length; i++) {
-                newRow.setAttribute(attributes[i][0], attributes[i][1]);
-            }
-        }
-    } catch(e) {
-        console.log("No attributes provided")
-    }
-    
-    // Add the newly created element and its content into the DOM 
-    var listContainer = document.getElementById("list"); 
-    listContainer.appendChild(newRow);
-}
 
 // Change background to a random colour
 function changeBg() {
@@ -138,10 +106,44 @@ function changeBg() {
     console.log("Changed bg");
 }
 
+
+
+// ---- Main ----
+
+var API = new APIRequest();
+
+// Add a row to the list
+function addListElement(text, attributes=[]) { 
+    // Create a new li element 
+    var newRow = document.createElement("li"); 
+    // And give it some content 
+    var newContent = document.createTextNode(text); 
+    // Add the text node to the newly created li
+    newRow.appendChild(newContent);
+    
+    // Add provided attributes
+    try {
+        if ( attributes != null && attributes[0].constructor != Array) {
+            newRow.setAttribute(attributes[0], attributes[1]);
+        } else {
+            for (var i = 0; i < attributes.length; i++) {
+                newRow.setAttribute(attributes[i][0], attributes[i][1]);
+            }
+        }
+    } catch(e) {
+        console.log("No attributes provided")
+    }
+    
+    // Add the newly created li and its content into the ul 
+    var listContainer = document.getElementById("list"); 
+    listContainer.appendChild(newRow);
+}
+
 // Clear the ul from all li elements
 function clearList() {
+    // Get array of children of ul (= li elements)
     var children = document.getElementById("list").children;
-    console.log(children.length);
+    //Go through and remove them one by one
     while (0 < children.length) {
         children[0].parentElement.removeChild(children[0]);
     }
@@ -157,11 +159,14 @@ function readFile(file) {
 
 // Add the departures to the list
 function displayDepartures(input) {
-    console.log(input);
     var departures = input["DepartureBoard"]["Departure"];
     console.log(departures);
 
+    // If more than one departure was found
     if (departures instanceof Object && departures.length != undefined) {
+        // Add title
+        addListElement("Departures from " + departures[0]["stop"]);
+        
         // Go through all departures and add them to the list
         for (var i = 0; i < departures.length; i++) {
             // Get delay and format it
@@ -170,18 +175,26 @@ function displayDepartures(input) {
                 delay = "+" + delay;
             }
 
+            // Texet and attributes
             var text = departures[i]["name"] + " " + departures[i]["direction"] + " " + departures[i]["time"] + " " + delay;
             var styles = "background-color: " + departures[i]["fgColor"] + "; color: " + departures[i]["bgColor"] + ";";
             addListElement(text, ["style", styles]);
         }
+    // If no departures were found
     } else if (departures == undefined) {
         addListElement("No departures found.");
+    // If only 1 departure was found
     } else {
+        // Add title
+        addListElement("Departures from " + departures["stop"]);
+        
+        // Get delay and format
         var delay = getDelay(departures);
         if (delay >= 0 && delay !== "") {
             delay = "+" + delay;
         }
 
+        // Text and attributes
         var text = departures["name"] + " " + departures["direction"] + " " + departures["time"] + " " + delay;
         var styles = "background-color: " + departures["fgColor"] + "; color: " + departures["bgColor"] + ";";
         addListElement(text, ["style", styles]); 
@@ -230,32 +243,39 @@ function getDelay(departure) {
     return delay;
 }
 
+// Function called by search button
 function searchStop() {
     var input = document.getElementById("stopSearch").value;
     API.getStops(input);
 }
 
+// Display the stops found
 function displayStops(stops) {
     var locations = stops["LocationList"];
     var stoplocations = locations["StopLocation"];
 
+    // If more than 1 stop was found
     if (stoplocations instanceof Array) {
         for (var i = 0; i < stoplocations.length; i++) {
-            var text = stoplocations[i]["name"] + " ID: " + stoplocations[i]["id"];
+            var text = stoplocations[i]["name"];
 
+            // Attributes
             var onclick = ["onclick", "API.getDepartures(" + stoplocations[i]["id"] + ")"];
-            var style = ["style", "color: blue; text-decoration: underline;"];
-            var attributes = [onclick, style];
+            var classname = ["class", "link"];
+            var attributes = [onclick, classname];
             addListElement(text, attributes);
         }
+    // If no stops were found
     } else if (stoplocations == null) {
         addListElement("No stops found.");
+    // If 1 stop was found
     } else {
-        var text = stoplocations["name"] + " ID: " + stoplocations["id"];
+        var text = stoplocations["name"];
         
+        //Attributes
         var onclick = ["onclick", "API.getDepartures(" + stoplocations["id"] + ")"];
-        var style = ["style", "color: blue; text-decoration: underline;"];
-        var attributes = [onclick, style];
+        var classname = ["class", "link"];
+        var attributes = [onclick, classname];
         addListElement(text, attributes);
     }
 }
