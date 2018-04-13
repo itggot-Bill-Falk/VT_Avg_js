@@ -131,7 +131,7 @@ function addListElement(text, attributes=[]) {
             }
         }
     } catch(e) {
-        console.log("No attributes provided")
+        console.log("No attributes provided");
     }
     
     // Add the newly created li and its content into the ul 
@@ -147,7 +147,7 @@ function clearList() {
     while (0 < children.length) {
         children[0].parentElement.removeChild(children[0]);
     }
-    console.log("List cleared")
+    console.log("List cleared");
 }
 
 // Read saved deps file used for testing
